@@ -1,0 +1,264 @@
+struct ngx_event_t {
+    void    *data;
+    unsigned     write:1;
+    unsigned     accept:1;
+    unsigned     instance:1; 
+    unsigned     active:1;
+    unsigned     disabled:1;
+    unsigned     ready:1;
+}
+
+struct ngx_str_t {
+    unsigned long len;
+    unsigned char *data;
+}
+
+
+struct ngx_conn_t {
+    
+    void *data;
+    void *read;
+    void *write;
+
+    int   fd;
+
+    void *recv; // recv_handler;
+    void *send; // send_handler;
+    void *recv_chain;
+    void *send_chain;
+
+    void *listening;
+
+    long  sent;
+
+    void *log;
+
+    void *pool;
+
+    int  type;
+
+    struct sockaddr *sockaddr;
+    unsigned int socklen;
+    struct ngx_str_t addr_text;
+
+    void *proxy_protocol;
+
+    void *ssl;
+
+    void *udp;
+
+    struct socketaddr *local_sockaddr;
+    unsigned int local_socklen;
+}
+
+struct ngx_stream_session_t {
+    
+    char      signature[4];
+
+    struct ngx_conn_t  *connection;
+    
+    //int64       received;
+    long        start_sec;
+    uint        start_msec;
+    
+    void        *log_handler;
+
+    void        **ctx;
+    void        **main_conf;
+    void        **srv_conf;
+
+    void        *upstream;
+    
+}
+
+uprobe:/usr/sbin/nginx:ngx_process_events_and_timers
+{
+    printf("\n\t\t %d ---------------------------------------------------------------- \n", tid);
+}
+
+/*
+* 从epoll中的回调函数中，回调相应的方法；
+*/
+uprobe:/usr/sbin/nginx:ngx_event_accept,uprobe:/usr/sbin/nginx:ngx_stream_proxy_connect_handler,
+uprobe:/usr/sbin/nginx:ngx_stream_proxy_upstream_handler,uprobe:/usr/sbin/nginx:ngx_stream_proxy_downstream_handler
+{
+    $event = (struct ngx_event_t *)arg0;
+    $conn  = (struct ngx_conn_t *) $event->data;
+
+    $ts = nsecs(sw_tai);
+
+    $local_sockaddr_in = (struct sockaddr_in*) $conn->local_sockaddr;
+    $local_addr = ntop((uint32) $local_sockaddr_in->sin_addr.s_addr);
+    $local_port_net = $local_sockaddr_in->sin_port;
+
+    $sockaddr_in = (struct sockaddr_in*) $conn->sockaddr;
+    $addr        = ntop((uint32) $sockaddr_in->sin_addr.s_addr);
+    $port_net = $sockaddr_in->sin_port;
+    
+    // tid, time, nsecs, fd, conn, conn->data,  ip:port, localip:localport;
+    printf("\n[%d, %s, %lld, %d, %p, %p] <- %s  (%s:%d, %s:%d) %s \n", 
+                tid, strftime("%H:%M:%S", $ts), $ts, 
+                $conn->fd, $conn, $conn->data,
+                func,
+                $addr, (($port_net & 0x00FF) << 8) | ($port_net >> 8),
+                $local_addr, (($local_port_net & 0x00FF) << 8) | ($local_port_net >> 8),
+                ($event->write & 0x0001) > 0 ? "WRITE" : "READ");
+}
+
+uprobe:/usr/sbin/nginx:ngx_stream_session_handler
+{
+    // fd -> conn -> session , local_sockaddr, sockaddr;
+
+    $event   = (struct ngx_event_t *) arg0;
+    $conn    = (struct ngx_conn_t *) $event->data;
+    $session = $conn->data;
+
+    $local_sockaddr_in = (struct sockaddr_in*) $conn->local_sockaddr;
+    $local_addr = ntop((uint32) $local_sockaddr_in->sin_addr.s_addr);
+    $local_port_net = $local_sockaddr_in->sin_port;
+
+    $sockaddr_in = (struct sockaddr_in*) $conn->sockaddr;
+    $addr        = ntop((uint32) $sockaddr_in->sin_addr.s_addr);
+    $port_net = $sockaddr_in->sin_port;
+
+    $sess_ts = nsecs(sw_tai);
+
+    // tid, time, nsecs, fd, conn, session, local_sockaddr, sockaddr;
+    printf("    [%d, %s, %lld, %d, %p, %p, %s:%d -> %s:%d]  <- %s\n", 
+            tid, strftime("%H:%M:%S", $sess_ts), $sess_ts, 
+            $conn->fd, 
+            $conn, 
+            $session, 
+            $addr, (($port_net & 0x00FF) << 8) | ($port_net >> 8),
+            $local_addr, (($local_port_net & 0x00FF) << 8) | ($local_port_net >> 8),
+            func);
+}
+
+uprobe:/usr/sbin/nginx:ngx_event_connect_peer
+{
+    @invoke_stack = ustack(perf);    
+    printf("    [%d, %s, %lld]   <- %s\n",
+            tid, strftime("%H:%M:%S", nsecs), nsecs,
+            func);     
+
+    printf("    %s\n", @invoke_stack);
+    delete(@invoke_stack);
+}   
+
+uprobe:/usr/sbin/nginx:ngx_unix_recv,uprobe:/usr/sbin/nginx:ngx_writev
+{
+    $conn = (struct ngx_conn_t*) arg0;
+    @invoke_stack = ustack(8);
+
+    printf("    [%d, %s, %lld]  %d <- %s  ( %p, %p)\n",
+            tid, strftime("%H:%M:%S", nsecs), nsecs,
+            $conn->fd,
+            func,
+            $conn, 
+            $conn->data);    
+    
+    printf("    %s\n", @invoke_stack);
+    delete(@invoke_stack);
+}
+
+uprobe:/usr/sbin/nginx:ngx_event_add_timer,uprobe:/usr/sbin/nginx:ngx_handle_read_event
+{
+    $event = (struct ngx_event_t*) arg0;
+    $conn  = (struct ngx_conn_t *) $event->data;
+    @invoke_satck = ustack(8);
+
+    printf("    [%d, %s, %lld, %d, %p, %p, %d, %d] <- %s\n", 
+            tid, strftime("%H:%M:%S", nsecs), nsecs, 
+            $conn->fd, 
+            $conn, 
+            $conn->data, 
+            $event->active, $event->ready,
+            func); 
+
+    printf("    %s\n", @invoke_satck);
+    delete(@invoke_satck);
+}
+
+uprobe:/usr/sbin/nginx:ngx_stream_proxy_process
+{
+    $session = (struct ngx_stream_session_t*) arg0;
+    $conn    = (struct ngx_conn_t*) $session->connection;
+    $from_up = arg1;
+    $do_write = arg2;
+
+    //@invoke_stack = ustack();
+
+    printf("    [%d, %s, %lld, %d, %p, %p, %s, %s] <- %s\n", 
+            tid, strftime("%H:%M:%S", nsecs), nsecs, 
+            $conn->fd, 
+            $conn, 
+            $conn->data, 
+            $from_up > 0 ? "from_upstream" : "from_downstream",
+            $do_write > 0 ? "Write" : "Read",
+            func); 
+    //printf("    %s\n", @invoke_satck);
+    //delete(@invoke_satck);
+}
+
+uprobe:/usr/sbin/nginx:ngx_epoll_add_event,uprobe:/usr/sbin/nginx:ngx_epoll_del_event
+{
+    $event = (struct ngx_event_t*) arg0;
+    $conn  = (struct ngx_conn_t*) $event->data;
+    
+    $event_fd = $conn->fd;
+    @func_stack = ustack();
+
+    $local_sockaddr_in = (struct sockaddr_in*) $conn->local_sockaddr;
+    $local_addr = ntop((uint32) $local_sockaddr_in->sin_addr.s_addr);
+    $local_port_net = $local_sockaddr_in->sin_port;
+
+    $sockaddr_in = (struct sockaddr_in*) $conn->sockaddr;
+    $addr        = ntop((uint32) $sockaddr_in->sin_addr.s_addr);
+    $port_net = $sockaddr_in->sin_port;
+
+    $sess_ts = nsecs(sw_tai);
+
+    // tid, time, nsecs, fd, conn, session, local_sockaddr, sockaddr;
+    printf("    [%d, %s, %lld, %d, %p, %p, %s:%d -> %s:%d] <- %s\n", 
+            tid, strftime("%H:%M:%S", $sess_ts), $sess_ts, 
+            $conn->fd, 
+            $conn, 
+            $conn->data, 
+            $addr, (($port_net & 0x00FF) << 8) | ($port_net >> 8),
+            $local_addr, (($local_port_net & 0x00FF) << 8) | ($local_port_net >> 8),
+            func);
+
+    printf("    %s\n", @func_stack);
+    delete(@func_stack);
+}
+
+uprobe:/usr/sbin/nginx:ngx_epoll_add_connection,uprobe:/usr/sbin/nginx:ngx_epoll_del_connection
+{
+    $conn  = (struct ngx_conn_t*)arg0;
+    
+    $event_fd = $conn->fd;
+    @func_stack = ustack();
+
+    $local_sockaddr_in = (struct sockaddr_in*) $conn->local_sockaddr;
+    $local_addr = ntop((uint32) $local_sockaddr_in->sin_addr.s_addr);
+    $local_port_net = $local_sockaddr_in->sin_port;
+
+    $sockaddr_in = (struct sockaddr_in*) $conn->sockaddr;
+    $addr        = ntop((uint32) $sockaddr_in->sin_addr.s_addr);
+    $port_net = $sockaddr_in->sin_port;
+
+    $sess_ts = nsecs(sw_tai);
+
+    // tid, time, nsecs, fd, conn, session, local_sockaddr, sockaddr;
+    printf("    [%d, %s, %lld, %d, %p, %p, %s:%d -> %s:%d] <- %s\n", 
+            tid, strftime("%H:%M:%S", $sess_ts), $sess_ts, 
+            $conn->fd, 
+            $conn, 
+            $conn->data, 
+            $addr, (($port_net & 0x00FF) << 8) | ($port_net >> 8),
+            $local_addr, (($local_port_net & 0x00FF) << 8) | ($local_port_net >> 8),
+            func);
+
+    printf("    %s\n", @func_stack);
+    delete(@func_stack);
+}

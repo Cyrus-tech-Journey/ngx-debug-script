@@ -1,0 +1,298 @@
+Attaching 15 probes...
+    [31628, 11:37:05, 1744947425680903143, 7, 0x7f951a5010, (nil), 0.0.0.0:0 -> 0.0.0.0:0] <- ngx_epoll_add_event
+    
+        ngx_epoll_add_event+0
+        ngx_worker_process_init+1196
+        ngx_worker_process_cycle+48
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+        ngx_master_process_cycle+464
+        main+2936
+        __libc_start_call_main+116
+        __libc_start_main_impl+152
+        _start+48
+
+    [31628, 11:37:05, 1744947425681487655, 8, 0x7f951a50f8, (nil), 0.0.0.0:0 -> 0.0.0.0:0] <- ngx_epoll_add_event
+    
+        ngx_epoll_add_event+0
+        ngx_worker_process_init+1468
+        ngx_worker_process_cycle+48
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+        ngx_master_process_cycle+464
+        main+2936
+        __libc_start_call_main+116
+        __libc_start_main_impl+152
+        _start+48
+
+
+		 31628 ---------------------------------------------------------------- 
+
+[31628, 11:37:10, 1744947430604916909, 7, 0x7f951a5010, (nil)] <- ngx_event_accept  (0.0.0.0:0, 0.0.0.0:0) READ 
+    [31628, 11:37:10, 1744947430605275958, 5, 0x7f951a51e0, 0x558daa6ad0, 127.0.0.1:48210 -> 127.0.0.1:80]  <- ngx_stream_session_handler
+    [31628, 11:37:10, 168934099971982]   <- ngx_event_connect_peer
+    
+        ngx_event_connect_peer+0
+        ngx_stream_proxy_handler+1192
+        ngx_stream_core_content_phase+68
+        ngx_stream_core_run_phases+64
+        ngx_stream_session_handler+20
+        ngx_stream_init_connection+668
+        ngx_event_accept+1440
+        ngx_epoll_process_events+828
+
+    [31628, 11:37:10, 1744947430605614298, 11, 0x7f951a52c8, (nil), 0.0.0.0:0 -> 0.0.0.0:0] <- ngx_epoll_add_connection
+    
+        ngx_epoll_add_connection+0
+        ngx_stream_proxy_connect+200
+        ngx_stream_proxy_handler+1192
+        ngx_stream_core_content_phase+68
+        ngx_stream_core_run_phases+64
+        ngx_stream_session_handler+20
+        ngx_stream_init_connection+668
+        ngx_event_accept+1440
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+        ngx_master_process_cycle+464
+        main+2936
+        __libc_start_call_main+116
+        __libc_start_main_impl+152
+        _start+48
+
+
+		 31628 ---------------------------------------------------------------- 
+
+[31628, 11:37:10, 1744947430608092057, 11, 0x7f951a52c8, 0x558daa6ad0] <- ngx_stream_proxy_connect_handler  (0.0.0.0:0, 0.0.0.0:0) WRITE 
+    [31628, 11:37:10, 168934102839707, 5, 0x7f951a51e0, 0x558daa6ad0, from_downstream, Write] <- ngx_stream_proxy_process
+    [31628, 11:37:10, 168934102891333, 5, 0x7f951a51e0, 0x558daa6ad0, 0, 0] <- ngx_handle_read_event
+    
+        ngx_handle_read_event+0
+        ngx_stream_proxy_init_upstream+708
+        ngx_stream_proxy_connect_handler+276
+        ngx_epoll_process_events+1060
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+    [31628, 11:37:10, 1744947430608365937, 5, 0x7f951a51e0, 0x558daa6ad0, 127.0.0.1:48210 -> 127.0.0.1:80] <- ngx_epoll_add_event
+    
+        ngx_epoll_add_event+0
+        ngx_stream_proxy_process+872
+        ngx_stream_proxy_init_upstream+708
+        ngx_stream_proxy_connect_handler+276
+        ngx_epoll_process_events+1060
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+        ngx_master_process_cycle+464
+        main+2936
+        __libc_start_call_main+116
+        __libc_start_main_impl+152
+        _start+48
+
+
+		 31628 ---------------------------------------------------------------- 
+
+[31628, 11:37:10, 1744947430608496023, 5, 0x7f951a51e0, 0x558daa6ad0] <- ngx_stream_proxy_downstream_handler  (127.0.0.1:48210, 127.0.0.1:80) READ 
+    [31628, 11:37:10, 168934103181839, 5, 0x7f951a51e0, 0x558daa6ad0, from_downstream, Read] <- ngx_stream_proxy_process
+    [31628, 11:37:10, 168934103226173]  5 <- ngx_unix_recv  ( 0x7f951a51e0, 0x558daa6ad0)
+    
+        ngx_unix_recv+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_downstream_handler+20
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+    [31628, 11:37:10, 168934103316592]  11 <- ngx_writev  ( 0x7f951a52c8, 0x558daa6ad0)
+    
+        ngx_writev+0
+        ngx_stream_write_filter+1364
+        ngx_stream_proxy_process+1392
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_downstream_handler+20
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+
+    [31628, 11:37:10, 168934103521054, 5, 0x7f951a51e0, 0x558daa6ad0, 1, 0] <- ngx_handle_read_event
+    
+        ngx_handle_read_event+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_downstream_handler+20
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+
+		 31628 ---------------------------------------------------------------- 
+
+[31628, 11:37:10, 1744947430610401520, 11, 0x7f951a52c8, 0x558daa6ad0] <- ngx_stream_proxy_upstream_handler  (0.0.0.0:0, 0.0.0.0:0) READ 
+    [31628, 11:37:10, 168934105054085, 5, 0x7f951a51e0, 0x558daa6ad0, from_upstream, Read] <- ngx_stream_proxy_process
+    [31628, 11:37:10, 168934105095795]  11 <- ngx_unix_recv  ( 0x7f951a52c8, 0x558daa6ad0)
+    
+        ngx_unix_recv+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+    [31628, 11:37:10, 168934105176296]  5 <- ngx_writev  ( 0x7f951a51e0, 0x558daa6ad0)
+    
+        ngx_writev+0
+        ngx_stream_write_filter+1364
+        ngx_stream_proxy_process+1392
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+
+    [31628, 11:37:10, 168934105464469, 11, 0x7f951a52c8, 0x558daa6ad0, 1, 0] <- ngx_handle_read_event
+    
+        ngx_handle_read_event+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+
+[31628, 11:37:10, 1744947430610923323, 11, 0x7f951a52c8, 0x558daa6ad0] <- ngx_stream_proxy_upstream_handler  (0.0.0.0:0, 0.0.0.0:0) WRITE 
+    [31628, 11:37:10, 168934105574429, 5, 0x7f951a51e0, 0x558daa6ad0, from_downstream, Write] <- ngx_stream_proxy_process
+    [31628, 11:37:10, 168934105613805, 5, 0x7f951a51e0, 0x558daa6ad0, 1, 0] <- ngx_handle_read_event
+    
+        ngx_handle_read_event+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+1060
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+
+		 31628 ---------------------------------------------------------------- 
+
+[31628, 11:37:10, 1744947430611118452, 11, 0x7f951a52c8, 0x558daa6ad0] <- ngx_stream_proxy_upstream_handler  (0.0.0.0:0, 0.0.0.0:0) READ 
+    [31628, 11:37:10, 168934105765767, 5, 0x7f951a51e0, 0x558daa6ad0, from_upstream, Read] <- ngx_stream_proxy_process
+    [31628, 11:37:10, 168934105802226]  11 <- ngx_unix_recv  ( 0x7f951a52c8, 0x558daa6ad0)
+    
+        ngx_unix_recv+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+    [31628, 11:37:10, 168934105877769]  5 <- ngx_writev  ( 0x7f951a51e0, 0x558daa6ad0)
+    
+        ngx_writev+0
+        ngx_stream_write_filter+1364
+        ngx_stream_proxy_process+1392
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+
+    [31628, 11:37:10, 168934106130649, 11, 0x7f951a52c8, 0x558daa6ad0, 1, 0] <- ngx_handle_read_event
+    
+        ngx_handle_read_event+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+
+[31628, 11:37:10, 1744947430611588920, 11, 0x7f951a52c8, 0x558daa6ad0] <- ngx_stream_proxy_upstream_handler  (0.0.0.0:0, 0.0.0.0:0) WRITE 
+    [31628, 11:37:10, 168934106238860, 5, 0x7f951a51e0, 0x558daa6ad0, from_downstream, Write] <- ngx_stream_proxy_process
+    [31628, 11:37:10, 168934106275319, 5, 0x7f951a51e0, 0x558daa6ad0, 1, 0] <- ngx_handle_read_event
+    
+        ngx_handle_read_event+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_upstream_handler+24
+        ngx_epoll_process_events+1060
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+
+		 31628 ---------------------------------------------------------------- 
+
+[31628, 11:37:10, 1744947430612065513, 5, 0x7f951a51e0, 0x558daa6ad0] <- ngx_stream_proxy_downstream_handler  (127.0.0.1:48210, 127.0.0.1:80) READ 
+    [31628, 11:37:10, 168934106681035, 5, 0x7f951a51e0, 0x558daa6ad0, from_downstream, Read] <- ngx_stream_proxy_process
+    [31628, 11:37:10, 168934106718369]  5 <- ngx_unix_recv  ( 0x7f951a51e0, 0x558daa6ad0)
+    
+        ngx_unix_recv+0
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_downstream_handler+20
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+
+    [31628, 11:37:10, 1744947430612247516, 11, 0x7f951a52c8, 0x558daa6ad0, 0.0.0.0:0 -> 0.0.0.0:0] <- ngx_epoll_del_connection
+    
+        ngx_epoll_del_connection+0
+        ngx_stream_proxy_finalize+208
+        ngx_stream_proxy_process+2212
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_downstream_handler+20
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+        ngx_master_process_cycle+464
+        main+2936
+        __libc_start_call_main+116
+        __libc_start_main_impl+152
+        _start+48
+
+    [31628, 11:37:10, 1744947430612554939, 5, 0x7f951a51e0, 0x558daa6ad0, 127.0.0.1:48210 -> 127.0.0.1:80] <- ngx_epoll_del_connection
+    
+        ngx_epoll_del_connection+0
+        ngx_stream_close_connection+40
+        ngx_stream_finalize_session+112
+        ngx_stream_proxy_finalize+224
+        ngx_stream_proxy_process+2212
+        ngx_stream_proxy_process_connection+844
+        ngx_stream_proxy_downstream_handler+20
+        ngx_epoll_process_events+828
+        ngx_process_events_and_timers+252
+        ngx_worker_process_cycle+276
+        ngx_spawn_process+1480
+        ngx_start_worker_processes+100
+        ngx_master_process_cycle+464
+        main+2936
+        __libc_start_call_main+116
+        __libc_start_main_impl+152
+        _start+48
+
+
+		 31628 ---------------------------------------------------------------- 
+
+
+
